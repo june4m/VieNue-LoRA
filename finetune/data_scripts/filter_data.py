@@ -63,8 +63,8 @@ def filter_and_process_dataset(dataset_dir="finetune/dataset"):
             info = sf.info(file_path)
             duration = info.duration
             
-            # Lọc audio quá ngắn (<3s) hoặc quá dài (>15s)
-            if not (3.0 <= duration <= 15.0):
+            # Lọc audio quá ngắn (<3s) hoặc quá dài (>30s)
+            if not (3.0 <= duration <= 30.0):
                 skipped_counts["duration_out_of_range"] += 1
                 continue
         except Exception:

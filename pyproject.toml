@@ -100,7 +100,8 @@ legacy = [
     "triton-windows; sys_platform == 'win32'",
     "triton; sys_platform == 'linux'",
     "accelerate; sys_platform == 'darwin'",
-    "llama-cpp-python==0.3.16",
+    "llama-cpp-python==0.3.19; sys_platform == 'win32' and python_version == '3.12'",
+    "llama-cpp-python==0.3.16; sys_platform != 'win32' or python_version != '3.12'",
 ]
 
 # PDF text extraction. Separate from core to keep the minimal install torch-free.
@@ -121,6 +122,9 @@ dev = [
     "neucodec>=0.0.4",
 ]
 gpu = [
+    "accelerate",
+    "peft",
+    "transformers",
     "neucodec>=0.0.4",
     "torch==2.8.0",
     "torchaudio==2.8.0",
@@ -129,10 +133,10 @@ gpu = [
     "lmdeploy; sys_platform != 'darwin'",
     "triton-windows; sys_platform == 'win32'",
     "triton; sys_platform == 'linux'",
-    "transformers; sys_platform == 'darwin'",
     "accelerate; sys_platform == 'darwin'",
     "trafilatura>=2.0.0",
-    "llama-cpp-python==0.3.16",
+    "llama-cpp-python==0.3.19; sys_platform == 'win32' and python_version == '3.12'",
+    "llama-cpp-python==0.3.16; sys_platform != 'win32' or python_version != '3.12'",
 ]
 
 [tool.pytest.ini_options]
@@ -171,7 +175,7 @@ lmdeploy = [
 ]
 
 llama-cpp-python = [
-    { url = "https://github.com/pnnbao97/VieNeu-TTS/releases/download/wheels-v0.3.16/llama_cpp_python-0.3.16-cp312-cp312-win_amd64.whl", marker = "sys_platform == 'win32' and python_version == '3.12'" },
+    { url = "https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.19/llama_cpp_python-0.3.19-cp312-cp312-win_amd64.whl", marker = "sys_platform == 'win32' and python_version == '3.12'" },
     { index = "llama-cpp-metal", marker = "sys_platform == 'darwin'" },
     { index = "pypi", marker = "sys_platform != 'win32' and sys_platform != 'darwin'" }
 ]
