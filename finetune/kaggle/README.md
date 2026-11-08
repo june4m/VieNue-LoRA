@@ -98,22 +98,20 @@ Script tự tìm `metadata_encoded.csv` trong `/kaggle/input` (nếu `REUSE_ENCO
 
 ## Dùng adapter trong API
 
-> [!WARNING]
-> Đoạn code dưới **chưa được chạy thử** qua engine `Vieneu(mode="standard")`. Mới chỉ đối chiếu tĩnh rằng `voices.json` có đúng cấu trúc `presets`/`default_voice` mà `base.py` đọc. Hãy chạy thử trên chính máy sẽ host API.
-
-Máy chủ API cần:
-- `torch`, `transformers`, `peft`, `neucodec` (nếu cài `neucodec` mới thì ghim `torchao==0.17.0`);
-- quyền vào repo gated `neuphonic/neucodec`: biến môi trường `HF_TOKEN` của tài khoản đã đồng ý điều khoản, **hoặc** cache sẵn weights rồi đặt `HF_HUB_OFFLINE=1`;
-- nên có GPU, vì backbone 0.3B chạy PyTorch.
+Service HTTP đóng gói sẵn adapter: xem [docs/TTS_API.md](../../docs/TTS_API.md) (`apps/tts_api.py`). Nếu muốn gọi engine trực tiếp, **hai tham số dưới là bắt buộc**:
 
 ```python
 from vieneu import Vieneu
 
 tts = Vieneu(mode="standard", backbone_repo="pnnbao-ump/VieNeu-TTS-0.3B",
-             backbone_device="cuda", codec_repo="neuphonic/neucodec")
+             backbone_device="cuda", codec_repo="neuphonic/neucodec", codec_device="cuda",
+             gguf_filename=None,   # mặc định là file GGUF -> không nạp được LoRA
+             emotion="none")       # LoRA train KHÔNG có tag <|emotion_0|> mà emotion="natural" chèn vào
 tts.load_lora_adapter("finetune/output/kaggle/vieneu-lora/<run_name>/best_adapter")  # đọc luôn voices.json
 audio = tts.infer("Câu hỏi số một. Thủ đô của nước Việt Nam là thành phố nào?")
 tts.save(audio, "question_01.wav")
 ```
+
+Máy chạy cần `torch`, `transformers`, `peft`, `neucodec` (nếu cài `neucodec` mới thì ghim `torchao==0.17.0`), và quyền vào repo gated `neuphonic/neucodec`: biến môi trường `HF_TOKEN`, hoặc cache sẵn weights rồi đặt `HF_HUB_OFFLINE=1`.
 
 Dataset `pnnbao-ump/ngochuyen_voice` có license **CC BY-NC 4.0**, chỉ dùng phi thương mại (đồ án được).

@@ -19,3 +19,7 @@ finetune/output/
 
 # Merged Models
 merged_models_cache/
+
+# TTS API: adapter mount + cache audio
+/models/
+/tts_cache/

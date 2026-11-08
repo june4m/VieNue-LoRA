@@ -53,3 +53,13 @@ ENV GRADIO_SERVER_NAME=0.0.0.0 \
     GRADIO_SERVER_PORT=7860 \
     GRADIO_SHARE=0
 CMD ["vieneu-web"]
+
+# --- Stage: TTS API cho LearnAble (VieNeu-TTS-0.3B + LoRA, xem docs/TTS_API.md) ---
+# Adapter KHÔNG nằm trong image: mount thư mục best_adapter vào /models/lora.
+FROM prod AS tts-api
+EXPOSE 8000
+ENV VIENEU_HOST=0.0.0.0 \
+    VIENEU_PORT=8000 \
+    VIENEU_LORA=/models/lora \
+    VIENEU_CACHE_DIR=/data/tts_cache
+CMD ["python", "-m", "apps.tts_api"]

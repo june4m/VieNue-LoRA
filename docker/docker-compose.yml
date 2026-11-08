@@ -77,7 +77,49 @@ services:
               count: all
               capabilities: [gpu]
 
+  # ========================================================
+  # TTS API Profile (LearnAble: VieNeu-TTS-0.3B + LoRA)
+  #   docker compose -f docker/docker-compose.yml --profile tts-api up -d --build
+  # ========================================================
+  tts-api:
+    profiles: ["tts-api"]
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.gpu
+      target: tts-api
+    container_name: vieneu-tts-api
+    ports:
+      - "${TTS_API_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - HF_HOME=/root/.cache/huggingface
+      - VIENEU_LORA=/models/lora
+      - VIENEU_CACHE_DIR=/data/tts_cache
+    volumes:
+      # Codec neuphonic/neucodec là repo gated: giữ cache để không tải lại mỗi lần start.
+      - huggingface_cache:/root/.cache/huggingface
+      # Thư mục best_adapter (adapter_model.safetensors + voices.json) trên máy host.
+      - ${VIENEU_LORA_HOST_DIR:-../models/lora}:/models/lora:ro
+      - tts_cache:/data/tts_cache
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 600s  # lần đầu phải tải backbone + codec
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
 volumes:
   huggingface_cache:
   uv_cache:
   pip_cache:
+  tts_cache:

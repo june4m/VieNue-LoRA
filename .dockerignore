@@ -60,3 +60,9 @@ outputs/
 
 
 
+
+# Finetune data/checkpoints, adapter mount và cache audio của TTS API
+finetune/dataset/
+finetune/output/
+models/
+tts_cache/
